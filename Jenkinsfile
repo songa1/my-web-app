@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = 'achillesonga/my-web-app'
         DOCKER_CREDENTIALS_ID = 'docker-hub-credentials'
+        CONTAINER_NAME = 'my-web-app'
     }
 
     stages {
@@ -28,6 +29,15 @@ pipeline {
                         dockerImage.push('latest')
                     }
                 }
+            }
+        }
+
+        stage('Deploy Locally') {
+            steps {
+                sh """
+                    docker rm -f ${CONTAINER_NAME} || true
+                    docker run -d --name ${CONTAINER_NAME} -p 8081:80 ${DOCKER_IMAGE}:latest
+                """
             }
         }
     }
